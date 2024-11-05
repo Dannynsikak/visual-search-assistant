@@ -16,3 +16,16 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* styles.css or in a relevant CSS file */
+body.light-theme {
+  /* Light theme styles */
+  background-color: #ffffff;
+  color: #000000;
+}
+
+body.dark-theme {
+  /* Dark theme styles */
+  background-color: #474545;
+  color: #ffffff;
+}

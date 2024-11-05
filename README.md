@@ -76,7 +76,7 @@ MongoDB or SQL Database (for data storage)
 Steps
 Clone the repository:
 
-git clone https://github.com/yourusername/visual-search-assistant.git
+git clone https://github.com:Dannynsikak/visual-search-assistant.git
 cd visual-search-assistant
 
 ## Backend Setup:
