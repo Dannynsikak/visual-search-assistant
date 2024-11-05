@@ -44,6 +44,3 @@ def get_image_description(image_path: str, mode: str = "summary") -> str:
         print(f"{error_message}: {e}")
         return error_message
 
-# Example usage
-# description = get_image_description("path/to/image.jpg", mode="detailed")
-# print(description)
