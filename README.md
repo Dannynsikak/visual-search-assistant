@@ -76,7 +76,7 @@ MongoDB or SQL Database (for data storage)
 Steps
 Clone the repository:
 
-git clone https://github.com:Dannynsikak/visual-search-assistant.git
+git clone https://github.com/Dannynsikak/visual-search-assistant.git
 cd visual-search-assistant
 
 ## Backend Setup:
@@ -119,7 +119,7 @@ Audio Output: Use the audio player to listen to the description.
 Project Structure
 graphql
 
-visual-search-assistant/
+`visual-search-assistant/
 ├── backend/
 │ ├── main.py # Main FastAPI server file
 │ ├── routes/
@@ -135,7 +135,7 @@ visual-search-assistant/
 │ │ └── services/
 │ │ └── api.js # API service for HTTP requests
 │ └── App.js
-└── README.md
+└── README.md`
 
 ## API Endpoints
 
