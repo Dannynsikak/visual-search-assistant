@@ -1,25 +1,43 @@
 import type React from "react";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import {
+  setDescriptionMode,
+  setDescription,
+  setAudioPath,
+  setError,
+  setLoading,
+  setUploadProgress,
+} from "../slice/searchSlice";
+import type { AppDispatch, RootState } from "../store";
+import { useState } from "react";
 
 const SearchComponent: React.FC = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [descriptionMode, setDescriptionMode] = useState("summary"); // Default to 'summary'
-  const [description, setDescription] = useState("");
-  const [audioPath, setAudioPath] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const dispatch: AppDispatch = useDispatch();
+
+  const [file, setFile] = useState<File | null>(null); // Local state for file
+  const descriptionMode = useSelector(
+    (state: RootState) => state.search.descriptionMode
+  );
+  const loading = useSelector((state: RootState) => state.search.loading);
+  const uploadProgress = useSelector(
+    (state: RootState) => state.search.uploadProgress
+  );
+  const error = useSelector((state: RootState) => state.search.error);
+  const description = useSelector(
+    (state: RootState) => state.search.description
+  );
+  const audioPath = useSelector((state: RootState) => state.search.audioPath);
 
   const handleUpload = async () => {
-    setError("");
-    setLoading(true);
-    setUploadProgress(0);
+    dispatch(setError(""));
+    dispatch(setLoading(true));
+    dispatch(setUploadProgress(0));
 
     const formData = new FormData();
     if (file) {
       formData.append("file", file);
-      formData.append("description_mode", descriptionMode); // Append description_mode
+      formData.append("description_mode", descriptionMode);
 
       try {
         const response = await axios.post(
@@ -32,7 +50,7 @@ const SearchComponent: React.FC = () => {
                 const percent = Math.round(
                   (progressEvent.loaded * 100) / progressEvent.total
                 );
-                setUploadProgress(percent);
+                dispatch(setUploadProgress(percent));
               }
             },
           }
@@ -41,26 +59,29 @@ const SearchComponent: React.FC = () => {
         console.log("Response data:", response.data);
 
         if (response.data) {
-          // Access process_response.description correctly
-          setDescription(
-            response.data.process_response?.description ||
-              "No description available."
+          dispatch(
+            setDescription(
+              response.data.process_response?.description ||
+                "No description available."
+            )
           );
-
-          // Access audio_path if it exists in audio_response
-          setAudioPath(response.data.audio_response?.audio_paths?.mp3 || "");
+          dispatch(
+            setAudioPath(response.data.audio_response?.audio_paths?.mp3 || "")
+          );
         } else {
-          setError("Unexpected response structure.");
+          dispatch(setError("Unexpected response structure."));
         }
       } catch (err) {
-        setError("An error occurred while uploading. Please try again.");
+        dispatch(
+          setError("An error occurred while uploading. Please try again.")
+        );
         console.error("Upload error:", err);
       } finally {
-        setLoading(false);
+        dispatch(setLoading(false));
       }
     } else {
-      setError("Please select a file before uploading.");
-      setLoading(false);
+      dispatch(setError("Please select a file before uploading."));
+      dispatch(setLoading(false));
     }
   };
 
@@ -82,7 +103,6 @@ const SearchComponent: React.FC = () => {
           className="text-red-600 font-bold mb-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
         />
 
-        {/* Dropdown for selecting description mode */}
         <label
           htmlFor="description-mode"
           className="block text-md font-semibold text-gray-800 mb-2"
@@ -92,8 +112,8 @@ const SearchComponent: React.FC = () => {
         <select
           id="description-mode"
           value={descriptionMode}
-          onChange={(e) => setDescriptionMode(e.target.value)}
-          className="mb-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
+          onChange={(e) => dispatch(setDescriptionMode(e.target.value))}
+          className="mb-4 border border-gray-300 bg-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
         >
           <option value="summary">Summary</option>
           <option value="detailed">Detailed</option>
@@ -132,7 +152,7 @@ const SearchComponent: React.FC = () => {
               }}
             >
               <track
-                src={"http://localhost:8000/captions.vtt"} // Adjust path as necessary
+                src={"http://localhost:8000/captions.vtt"}
                 kind="captions"
                 srcLang="en"
                 label="English"
