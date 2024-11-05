@@ -11,30 +11,28 @@ tokenizer = AutoTokenizer.from_pretrained("nlpconnect/vit-gpt2-image-captioning"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 
-def get_image_description(image_path):
+def get_image_description(image_path: str, mode: str = "summary") -> str:
     """
-    Processes an image to generate a descriptive caption.
+    Generates a description for the image based on the specified mode.
+
+    Parameters:
+        image_path (str): The path to the image file.
+        mode (str): The mode for description; could be 'summary' or 'detailed'.
+
+    Returns:
+        str: The generated description.
     """
     try:
-        # Load and preprocess the image
-        image = Image.open(image_path).convert("RGB")
+        # Load the image and preprocess it for the model
+        image = Image.open(image_path)
+        inputs = feature_extractor(images=image, return_tensors="pt").to(device)
         
-        # Extract pixel values (feature_extractor includes resizing and normalization)
-        pixel_values = feature_extractor(images=image, return_tensors="pt").pixel_values.to(device)
+        # Generate caption using the model
+        outputs = model.generate(**inputs, max_length=50 if mode == "summary" else 100)
         
-        # Generate a caption for the image
-        generated_ids = model.generate(
-            pixel_values, 
-            max_length=40, 
-            num_beams=5, 
-            no_repeat_ngram_size=2, 
-            early_stopping=True
-        )
+        # Decode the generated caption
+        description = tokenizer.decode(outputs[0], skip_special_tokens=True)
         
-        # Decode the caption
-        description = tokenizer.decode(generated_ids[0], skip_special_tokens=True)
-        
-        # Return the text description
         return description
 
     except UnidentifiedImageError:
@@ -47,5 +45,5 @@ def get_image_description(image_path):
         return error_message
 
 # Example usage
-# description = get_image_description("path/to/image.jpg")
+# description = get_image_description("path/to/image.jpg", mode="detailed")
 # print(description)
