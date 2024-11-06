@@ -115,7 +115,7 @@ const SearchComponent: React.FC = () => {
             id="description-mode"
             value={descriptionMode}
             onChange={(e) => dispatch(setDescriptionMode(e.target.value))}
-            className="mb-4 border border-gray-300 bg-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
+            className="mb-4 border border-gray-300  rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
           >
             <option value="summary">Summary</option>
             <option value="detailed">Detailed</option>
