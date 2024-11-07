@@ -1,10 +1,15 @@
-# Railway.toml
-
 [build]
 commands = [
+    # Build frontend
     "cd frontend && npm install && npm run build",
-    "cd backend && pip install -r requirements.txt"
+    
+    # Install Python dependencies for backend
+    "cd backend && pip install -r requirements.txt",
+
+    # Copy the built frontend assets to the backend's static folder
+    "cp -r frontend/dist backend/static"
 ]
 
 [start]
+# Start the backend server with Uvicorn, serving both API and frontend assets
 command = "cd backend && uvicorn app:app --host 0.0.0.0 --port ${PORT}"
