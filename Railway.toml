@@ -1,15 +1,12 @@
-[build]
-commands = [
-    # Build frontend
-    "cd frontend && npm install && npm run build",
-    
-    # Install Python dependencies for backend
-    "cd backend && pip install -r requirements.txt",
+[env]
+PORT = "3000" 
 
-    # Copy the built frontend assets to the backend's static folder
-    "cp -r frontend/dist backend/static"
-]
+[services.backend]
+  command = "docker-compose up backend" 
+  [services.backend.build]
+    dockerfile = "Dockerfile.backend"
 
-[start]
-# Start the backend server with Uvicorn, serving both API and frontend assets
-command = "cd backend && uvicorn app:app --host 0.0.0.0 --port ${PORT}"
+[services.frontend]
+  command = "docker-compose up frontend" 
+  [services.frontend.build]
+    dockerfile = "Dockerfile.frontend"
