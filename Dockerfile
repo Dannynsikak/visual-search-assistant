@@ -1,20 +1,24 @@
-
-FROM node:18 as frontend-builder
+FROM node:18-buster AS frontend-build
 
 WORKDIR /app/frontend
 
 COPY frontend/package*.json ./
 RUN npm install
-COPY frontend .
+
+COPY frontend/ .
 RUN npm run build
 
-FROM python:3.9
+FROM python:3.9-slim AS backend
 
-WORKDIR /app
+WORKDIR /app/backend
 
-COPY backend /app/backend
-COPY --from=frontend-builder /app/frontend/dist /app/backend/static
+COPY backend/requirements.txt .
+RUN pip install -r requirements.txt
 
-RUN pip install -r backend/requirements.txt
+COPY backend/ .
+
+COPY --from=frontend-build /app/frontend/dist ./static
+
+EXPOSE 8000
 
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
