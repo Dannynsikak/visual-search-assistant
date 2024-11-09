@@ -1,7 +1,7 @@
 [phases.build]
 commands = [
   "cd frontend && npm install && npm run build",
-  "cd backend && pip install -r requirements.txt",
+  "cd backend && pip install --no-cache-dir -r requirements.txt",
   "mkdir -p backend/static && cp -r frontend/dist/* backend/static/"
 ]
 
