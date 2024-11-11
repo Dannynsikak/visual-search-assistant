@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import uuid
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,6 +8,8 @@ from fastapi.responses import JSONResponse
 from image_processing import get_image_description
 from chromadb_config import add_to_database, query_database
 from utils.speech_synthesis import text_to_speech
+from typing import List
+
 
 app = FastAPI()
 
@@ -86,6 +89,24 @@ async def audio_control(action: str, audio_path: str):
             return JSONResponse(content={"error": f"Invalid action: {action}"}, status_code=400)
         
         return {"status": f"Audio {action} action performed on {audio_path}"}
+    
+    except Exception as e:
+        return JSONResponse(content={"error": f"An error occurred: {str(e)}"}, status_code=500)
+
+
+@app.get("/latest-recordings", response_model=List[str])
+def get_latest_recordings():
+    try:
+        # List all .mp3 files in the "temp" directory
+        recordings = list(Path("temp").glob("*.mp3"))
+        
+        # Sort files by modified time, most recent first
+        recordings.sort(key=lambda x: x.stat().st_mtime, reverse=True)
+        
+        # Get the latest six recordings and construct URLs
+        latest_recordings = [f"/temp/{file.name}" for file in recordings[:6]]
+        
+        return latest_recordings
     
     except Exception as e:
         return JSONResponse(content={"error": f"An error occurred: {str(e)}"}, status_code=500)
