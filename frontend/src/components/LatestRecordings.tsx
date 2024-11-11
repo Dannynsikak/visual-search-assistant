@@ -31,16 +31,25 @@ const LatestRecordings: React.FC = () => {
   console.log("Error (if any):", error);
 
   return (
-    <div className="recordings-list">
-      <h2>Latest Recordings</h2>
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
+    <div className="recordings-list h-full p-6 bg-white shadow-lg overflow-y-auto  w-full max-w-md">
+      <h2 className="text-2xl font-semibold mb-4 text-gray-800 border-b pb-2">
+        Recent Recordings
+      </h2>
+
+      {loading && <p className="text-gray-500 text-center mt-4">Loading...</p>}
+
+      {error && <p className="text-red-500 text-center mt-4">{error}</p>}
+
       {recordings.length > 0 ? (
-        <ul>
+        <ul className="space-y-4">
           {recordings.map((recording) => (
-            <li key={recording.id}>
+            <li
+              key={recording.id}
+              className="bg-gray-100 rounded p-4 shadow-md"
+            >
               <audio
                 controls
+                className="w-full mt-2"
                 onPlay={() => console.log("Audio started playing")}
                 onPause={() => console.log("Audio paused")}
                 onError={handleError}
@@ -49,7 +58,7 @@ const LatestRecordings: React.FC = () => {
                 Your browser does not support the audio element.
                 {/* Optional: Add captions if you have a captions file */}
                 <track
-                  src={"http://localhost:8000/captions.vtt"}
+                  src="http://localhost:8000/captions.vtt"
                   kind="captions"
                   srcLang="en"
                   label="English"
@@ -60,7 +69,11 @@ const LatestRecordings: React.FC = () => {
           ))}
         </ul>
       ) : (
-        !loading && <p>No recent recordings available.</p>
+        !loading && (
+          <p className="text-gray-500 text-center mt-4">
+            No recent recordings available.
+          </p>
+        )
       )}
     </div>
   );

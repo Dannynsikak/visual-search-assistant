@@ -1,6 +1,6 @@
 import type React from "react";
 import { useState } from "react";
-import { FiEye } from "react-icons/fi"; // Import the icon you want to use
+import { TbHistoryToggle } from "react-icons/tb";
 import LatestRecordings from "./LatestRecordings"; // Adjust the path as needed
 
 const ToggleModal: React.FC = () => {
@@ -12,18 +12,18 @@ const ToggleModal: React.FC = () => {
 
   return (
     <div>
-      <FiEye
+      <TbHistoryToggle
         onClick={toggleModal}
-        className="text-blue-500 text-3xl cursor-pointer hover:text-blue-700"
+        className="text-3xl cursor-pointer hover:text-gray-500"
       />
 
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
-          <div className="bg-white p-6 rounded shadow-lg max-w-lg w-full relative">
+        <div className="fixed inset-y-0 left-0 flex items-start bg-gray-800 bg-opacity-75 z-50">
+          <div className="bg-white p-6  rounded-br-lg shadow-lg h-full w-full max-w-md relative">
             <button
               type="button"
               onClick={toggleModal}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-[2.5rem]"
             >
               &times;
             </button>
