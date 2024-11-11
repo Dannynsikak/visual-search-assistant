@@ -1,5 +1,6 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 import searchReducer from "./slice/searchSlice";
+import recordingReducer from "./slice/latestRecordings";
 
 // Define the shape of your app's state
 type ModeState = {
@@ -32,6 +33,7 @@ const store = configureStore({
   reducer: {
     search: searchReducer,
     mode: modeSlice.reducer,
+    recordings: recordingReducer,
   },
 });
 

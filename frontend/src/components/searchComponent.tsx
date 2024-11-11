@@ -12,6 +12,7 @@ import {
 import type { AppDispatch, RootState } from "../store";
 import { useState } from "react";
 import { ToggleButton } from "./ToggleBtn";
+import ToggleModal from "./ToggleModel";
 
 const SearchComponent: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -56,9 +57,6 @@ const SearchComponent: React.FC = () => {
             },
           }
         );
-
-        console.log("Response data:", response.data);
-
         if (response.data) {
           dispatch(
             setDescription(
@@ -89,6 +87,7 @@ const SearchComponent: React.FC = () => {
   return (
     <div className="p-2">
       <ToggleButton />
+      <ToggleModal />
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col max-w-md w-full p-6 bg-white shadow-lg rounded-lg">
           <label
