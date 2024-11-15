@@ -43,7 +43,7 @@ const SearchComponent: React.FC = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:8000/upload-image/",
+          "http://localhost:8000/upload-image",
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },

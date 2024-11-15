@@ -1,10 +1,10 @@
-from transformers import VisionEncoderDecoderModel, AutoTokenizer, ViTFeatureExtractor
+from transformers import VisionEncoderDecoderModel, AutoTokenizer, ViTImageProcessor
 import torch
 from PIL import Image, UnidentifiedImageError
 
 # Load the model, feature extractor, and tokenizer
 model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
-feature_extractor = ViTFeatureExtractor.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+feature_extractor = ViTImageProcessor.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
 tokenizer = AutoTokenizer.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
 
 # Check if GPU is available
