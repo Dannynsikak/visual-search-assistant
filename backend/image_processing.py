@@ -1,10 +1,18 @@
+<<<<<<< HEAD
 from transformers import VisionEncoderDecoderModel, AutoTokenizer, ViTImageProcessor
+=======
+from transformers import VisionEncoderDecoderModel, AutoTokenizer, ViTFeatureExtractor
+>>>>>>> 221de2e8fc6779426901f2f3eb86618b73e0c2c2
 import torch
 from PIL import Image, UnidentifiedImageError
 
 # Load the model, feature extractor, and tokenizer
 model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+<<<<<<< HEAD
 feature_extractor = ViTImageProcessor.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+=======
+feature_extractor = ViTFeatureExtractor.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
+>>>>>>> 221de2e8fc6779426901f2f3eb86618b73e0c2c2
 tokenizer = AutoTokenizer.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
 
 # Check if GPU is available
@@ -27,6 +35,7 @@ def get_image_description(image_path: str, mode: str = "summary") -> str:
         image = Image.open(image_path)
         inputs = feature_extractor(images=image, return_tensors="pt").to(device)
         
+<<<<<<< HEAD
         # Create an attention mask
         attention_mask = torch.ones(inputs['pixel_values'].shape[:-1], dtype=torch.long).to(device)
 
@@ -36,6 +45,10 @@ def get_image_description(image_path: str, mode: str = "summary") -> str:
             attention_mask=attention_mask,
             max_length=50 if mode == "summary" else 100
         )
+=======
+        # Generate caption using the model
+        outputs = model.generate(**inputs, max_length=50 if mode == "summary" else 100)
+>>>>>>> 221de2e8fc6779426901f2f3eb86618b73e0c2c2
         
         # Decode the generated caption
         description = tokenizer.decode(outputs[0], skip_special_tokens=True)

@@ -43,7 +43,11 @@ const SearchComponent: React.FC = () => {
 
       try {
         const response = await axios.post(
+<<<<<<< HEAD
           "http://localhost:8000/upload-image",
+=======
+          "http://localhost:8000/upload-image/",
+>>>>>>> 221de2e8fc6779426901f2f3eb86618b73e0c2c2
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },
@@ -64,6 +68,7 @@ const SearchComponent: React.FC = () => {
                 "No description available."
             )
           );
+<<<<<<< HEAD
           const audioUrl = response.data.audio_response?.audio_paths?.mp3 || "";
 
           dispatch(setAudioPath(audioUrl));
@@ -71,6 +76,11 @@ const SearchComponent: React.FC = () => {
           if (audioUrl) {
             localStorage.setItem("audioPath", audioUrl);
           }
+=======
+          dispatch(
+            setAudioPath(response.data.audio_response?.audio_paths?.mp3 || "")
+          );
+>>>>>>> 221de2e8fc6779426901f2f3eb86618b73e0c2c2
         } else {
           dispatch(setError("Unexpected response structure."));
         }
@@ -132,7 +142,11 @@ const SearchComponent: React.FC = () => {
             {loading ? "Uploading..." : "Upload and Describe"}
           </button>
           {loading && (
+<<<<<<< HEAD
             <div className="mt-2 text-gray-500 text-sm text-center">
+=======
+            <div className="mt-2 text-gray-500 text-sm">
+>>>>>>> 221de2e8fc6779426901f2f3eb86618b73e0c2c2
               {uploadProgress}% uploaded...
             </div>
           )}

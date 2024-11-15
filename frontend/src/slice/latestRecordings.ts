@@ -23,7 +23,7 @@ const initialState: RecordingsState = {
 export const fetchLatestRecordings = createAsyncThunk(
   "recordings/fetchLatestRecordings",
   async () => {
-    const response = await fetch("http://localhost:8000/first-six-recordings");
+    const response = await fetch("http://localhost:8000/latest-recordings");
 
     // Handle non-OK responses
     if (!response.ok) {
