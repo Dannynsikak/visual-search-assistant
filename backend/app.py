@@ -1,23 +1,15 @@
 import os
-<<<<<<< HEAD
-=======
 from pathlib import Path
->>>>>>> 221de2e8fc6779426901f2f3eb86618b73e0c2c2
 import uuid
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from image_processing import get_image_description
-<<<<<<< HEAD
-from chromadb_config import add_to_database
-from utils.speech_synthesis import text_to_speech
-=======
 from chromadb_config import add_to_database, query_database
 from utils.speech_synthesis import text_to_speech
 from typing import List
 
->>>>>>> 221de2e8fc6779426901f2f3eb86618b73e0c2c2
 
 app = FastAPI()
 
@@ -32,21 +24,15 @@ app.add_middleware(
 
 # Serve static files from the "temp" directory
 app.mount("/temp", StaticFiles(directory="temp"), name="temp")
-<<<<<<< HEAD
-=======
 app.mount("/static", StaticFiles(directory="static"), name="static")
->>>>>>> 221de2e8fc6779426901f2f3eb86618b73e0c2c2
 
 # Create temp directory if not exists
 if not os.path.exists("temp"):
     os.makedirs("temp")
 
-<<<<<<< HEAD
-=======
 # Create static directory if not exists
 if not os.path.exists("static"):
     os.makedirs("static")
->>>>>>> 221de2e8fc6779426901f2f3eb86618b73e0c2c2
 
 @app.post("/upload-image/")
 async def upload_image(file: UploadFile = File(...), lang: str = "en", description_mode: str = "summary"):
@@ -106,8 +92,6 @@ async def audio_control(action: str, audio_path: str):
     
     except Exception as e:
         return JSONResponse(content={"error": f"An error occurred: {str(e)}"}, status_code=500)
-<<<<<<< HEAD
-=======
 
 
 @app.get("/latest-recordings", response_model=List[str])
@@ -126,4 +110,3 @@ def get_latest_recordings():
     
     except Exception as e:
         return JSONResponse(content={"error": f"An error occurred: {str(e)}"}, status_code=500)
->>>>>>> 221de2e8fc6779426901f2f3eb86618b73e0c2c2
