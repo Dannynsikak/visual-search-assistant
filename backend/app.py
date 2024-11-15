@@ -24,15 +24,11 @@ app.add_middleware(
 
 # Serve static files from the "temp" directory
 app.mount("/temp", StaticFiles(directory="temp"), name="temp")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 # Create temp directory if not exists
 if not os.path.exists("temp"):
     os.makedirs("temp")
-
-# Create static directory if not exists
-if not os.path.exists("static"):
-    os.makedirs("static")
 
 @app.post("/upload-image/")
 async def upload_image(file: UploadFile = File(...), lang: str = "en", description_mode: str = "summary"):

@@ -12,11 +12,17 @@ const LatestRecordings: React.FC = () => {
   const { recordings, loading, error } = useSelector(
     (state: RootState) => state.recordings // Fetch from the recordings slice
   );
+
+  // Handle error when audio fails to play
   const handleError = (
     event: React.SyntheticEvent<HTMLAudioElement, Event>
+  ) => {
+    console.error("Audio error:", event);
+    // Optionally dispatch an action to handle the error (e.g., show a toast or update state)
+  };
 
+  // Dispatch fetchLatestRecordings when the component mounts
   useEffect(() => {
-    // Dispatch fetchLatestRecordings when the component mounts
     console.log("Dispatching fetchLatestRecordings...");
     dispatch(fetchLatestRecordings());
   }, [dispatch]);
@@ -27,7 +33,7 @@ const LatestRecordings: React.FC = () => {
   console.log("Error (if any):", error);
 
   return (
-    <div className="recordings-list h-full p-6 bg-white shadow-lg overflow-y-auto  w-full max-w-md">
+    <div className="recordings-list h-full p-6 bg-white shadow-lg overflow-y-auto w-full max-w-md">
       <h2 className="text-2xl font-semibold mb-4 text-gray-800 border-b pb-2">
         Recent Recordings
       </h2>
