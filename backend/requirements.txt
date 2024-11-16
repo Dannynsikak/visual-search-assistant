@@ -4,7 +4,14 @@ uvicorn==0.31.0
 chromadb==0.5.12
 sentence-transformers==3.1.1
 pydub==0.25.1
-gTTS==2.2.4
 Pillow==10.4.0
 requests==2.32.3
 python-dotenv==1.0.1
+coqui-tts==0.24.2
+coqui-tts-trainer==0.1.4
+torch==2.4.1
+torchaudio==2.4.1
+numpy==1.26.4
+soundfile==0.12.1
+librosa==0.10.2.post1
+transformers==4.42.4

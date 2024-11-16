@@ -1,16 +1,24 @@
-from gtts import gTTS
+from TTS.api import TTS
 from pydub import AudioSegment
 
 def text_to_speech(text, filename, lang='en', speed=1.0, volume=1.0):
+    # Initialize the TTS model (ensure you have a compatible model for your use case)
+    # You can replace this model path with another pre-trained TTS model from Coqui
+    model_name = TTS.list_models()[0]  # Select the first available model
+    tts = TTS(model_name)
+
     # Generate audio
-    tts = gTTS(text=text, lang=lang)
-    mp3_path = f"{filename}.mp3"
-    tts.save(mp3_path)
-    
-    # Adjust speed and volume
-    audio = AudioSegment.from_mp3(mp3_path)
-    audio = audio.speedup(playback_speed=speed).apply_gain(volume)
     wav_path = f"{filename}.wav"
-    audio.export(wav_path, format="wav")
+    tts.tts_to_file(text=text, file_path=wav_path)
+
+    # Adjust speed and volume using pydub
+    audio = AudioSegment.from_file(wav_path)
+    audio = audio.speedup(playback_speed=speed).apply_gain(volume)
+    adjusted_wav_path = f"{filename}_adjusted.wav"
+    audio.export(adjusted_wav_path, format="wav")
     
-    return {"mp3": mp3_path, "wav": wav_path}  # Return both formats
+    # Optionally, export an MP3 version as well
+    mp3_path = f"{filename}_adjusted.mp3"
+    audio.export(mp3_path, format="mp3")
+
+    return {"wav": adjusted_wav_path, "mp3": mp3_path}
