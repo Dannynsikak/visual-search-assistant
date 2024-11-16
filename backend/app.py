@@ -30,7 +30,7 @@ app.mount("/temp", StaticFiles(directory="temp"), name="temp")
 if not os.path.exists("temp"):
     os.makedirs("temp")
 
-@app.post("/upload-image/")
+@app.post("/upload-image")
 async def upload_image(file: UploadFile = File(...), lang: str = "en", description_mode: str = "summary"):
     try:
         # Validate file type

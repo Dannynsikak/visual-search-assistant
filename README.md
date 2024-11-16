@@ -1,6 +1,6 @@
 ## Visual Search Assistant
 
-The Visual Search Assistant is a powerful tool that allows users to upload images for description and audio generation, making it accessible and useful for visually impaired users or anyone needing audio feedback on visual content. It leverages deep learning for image captioning and generates descriptions in either summary or detailed modes, providing flexible output options. Audio files of the descriptions are also created, allowing users to listen to generated descriptions.
+The Visual Search Assistant is a powerful application that enables users to upload images and receive descriptive text and audio outputs. This tool is designed to enhance accessibility for visually impaired users and provide audio feedback for various visual content. Leveraging deep learning and advanced technologies, the application offers flexibility with summary and detailed modes for descriptions.
 
 ## Table of Contents
 
@@ -54,17 +54,19 @@ Axios: Used for handling HTTP requests to the backend server.
 Python with FastAPI: High-performance web framework for building API endpoints.
 Transformers Library: Used for the image-to-text model, specifically the VisionEncoderDecoderModel.
 Pillow: Image processing library for loading and validating images.
-Torch: PyTorch for running deep learning models.
+Torch: Supports running deep learning models.
 
 # Machine Learning:
 
-VisionEncoderDecoderModel: A pre-trained model that converts images into descriptive text.
-ViTFeatureExtractor and AutoTokenizer: Tools for pre-processing images and tokenizing text to make them compatible with the model.
+VisionEncoderDecoderModel: A pre-trained model that generates decriptive text from images.
+
+ViTImageProcessor and AutoTokenizer: Tools for pre-processing images and tokenizing text to make them compatible with the model.
 
 ## Other:
 
+Chromadb:ChromaDB is a vector database used to store and manage metadata of generated descriptions. It enables efficient retrieval and search functionality by representing data as embeddings, making it ideal for handling complex queries, such as searching for similar image descriptions or categorizing data based on content relationships.
+
 FFmpeg: Converts text to audio in various formats (MP3, WAV).
-MongoDB or SQL Database: Stores metadata of generated descriptions.
 
 ## Setup Instructions
 
@@ -72,10 +74,11 @@ Prerequisites
 Node.js (for the frontend)
 Python 3.7+ (for the backend)
 FFmpeg (for audio conversion)
-MongoDB or SQL Database (for data storage)
-Steps
-Clone the repository:
+Chromadb (for data storage)
 
+## Steps
+
+Clone the repository:
 git clone https://github.com/Dannynsikak/visual-search-assistant.git
 cd visual-search-assistant
 
@@ -88,6 +91,9 @@ python -m venv env
 source env/bin/activate # On Windows, use `env\Scripts\activate`
 pip install -r requirements.txt
 Ensure FFmpeg is installed and available in your PATH.
+
+Verify FFmpeg installation:
+ffmpeg -version
 
 ## Frontend Setup:
 
@@ -109,24 +115,28 @@ Start the frontend development server:
 
 cd frontend
 npm start
-Usage
-Upload Image: Go to the upload section and select an image file.
-Choose Description Mode: Select either “Summary” or “Detailed” for the description type.
-Submit for Processing: Click “Upload and Describe” to send the image to the backend.
+
+## Usage
+
+Upload Image: Navigate to the upload section and select an image.
+Choose Mode: Pick either “Summary” or “Detailed” for the description.
+Submit for Processing: Click "Upload and Describe" to start processing.
 View Results:
-Text Output: View the generated description.
-Audio Output: Use the audio player to listen to the description.
+Text Description: Read the generated output.
+Audio Playback: Use the built-in player to listen to the description.
+[INSERT SCREENSHOTS HERE]
+
 Project Structure
-graphql
+
+# graphql
 
 `visual-search-assistant/
 ├── backend/
-│ ├── main.py # Main FastAPI server file
-│ ├── routes/
-│ │ └── image_processing.py # Handles image upload and description generation
-│ ├── models/ # Machine learning models for image-to-text
-│ └── utils/
-│ └── audio_conversion.py # Text-to-audio conversion utilities
+│ ├── app.py # Main FastAPI server file
+│ ├── image_processing.py # Image upload and processing logic
+│ ├── chromadb_config.py #  # Machine learning models
+│ ├── utils/ 
+│ └── speech_synthesis.py.py # Text-to-audio conversion utilities
 ├── frontend/
 │ ├── public/
 │ ├── src/
@@ -139,7 +149,7 @@ graphql
 
 ## API Endpoints
 
-POST /upload-image/: Accepts an image file, processes it, and returns a description and audio file paths.
+POST /upload-image: Accepts an image file, processes it, and returns a description and audio file paths.
 Parameters:
 file: Image file (required)
 description_mode: summary or detailed
