@@ -5,9 +5,8 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
-from image_processing import get_image_description
+from image_processing import generate_speech_from_description, get_image_description
 from chromadb_config import add_to_database, query_database
-from utils.speech_synthesis import text_to_speech
 from typing import List
 
 
@@ -25,10 +24,27 @@ app.add_middleware(
 # Serve static files from the "temp" directory
 app.mount("/temp", StaticFiles(directory="temp"), name="temp")
 
+available_speakers = [
+    "Daisy Studious", "Sofia Hellen", "Asya Anara",
+    "Eugenio Mataracı","Viktor Menelaos", "Damien Black"
+]
+
+available_languages = ["US English", "Spanish (LatAm)"]
+
+# Defining Variables to Hold Selected Voice and Localization
+selected_speaker = available_speakers[0]
+selected_language = available_languages[0]
 
 # Create temp directory if not exists
 if not os.path.exists("temp"):
     os.makedirs("temp")
+
+# TODO#6 - Managing Outputs
+# Create the output directory if it doesn't exist
+os.makedirs("output_path", exist_ok=True)
+# global variable to store the last generated audio path and text
+last_generated_audio = None
+last_generated_text = ""
 
 @app.post("/upload-image")
 async def upload_image(file: UploadFile = File(...), lang: str = "en", description_mode: str = "summary"):
@@ -54,8 +70,8 @@ async def upload_image(file: UploadFile = File(...), lang: str = "en", descripti
         add_to_database(item_id, description)
         
         # Generate audio from description
-        audio_paths = text_to_speech(description, temp_file_path, lang=lang)
-        
+        audio_paths = generate_speech_from_description(description,speaker=selected_speaker,language=selected_language)
+        print(f"audio_paths{audio_paths}")
         return {
             "upload_response": upload_response,
             "process_response": process_response,
@@ -93,14 +109,14 @@ async def audio_control(action: str, audio_path: str):
 @app.get("/latest-recordings", response_model=List[str])
 def get_latest_recordings():
     try:
-        # List all .mp3 files in the "temp" directory
-        recordings = list(Path("temp").glob("*.mp3"))
+        # List all .wav files in the "output_path" directory
+        recordings = list(Path("output_path").glob("*.wav"))
         
         # Sort files by modified time, most recent first
         recordings.sort(key=lambda x: x.stat().st_mtime, reverse=True)
         
-        # Get the latest six recordings and construct URLs
-        latest_recordings = [f"/temp/{file.name}" for file in recordings[:6]]
+        # Get the first recordings and construct URLs
+        latest_recordings = [f"/output_path/{file.name}" for file in recordings[:1]]
         
         return latest_recordings
     

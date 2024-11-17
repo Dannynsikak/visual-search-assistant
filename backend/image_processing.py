@@ -1,3 +1,4 @@
+import uuid
 from transformers import VisionEncoderDecoderModel, AutoTokenizer, ViTImageProcessor
 import torch
 from PIL import Image, UnidentifiedImageError
@@ -18,23 +19,23 @@ tts = TTS(model_name, gpu=False)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 
-available_speakers = [
-    "Daisy Studious", "Sofia Hellen", "Asya Anara",
-    "Eugenio Mataracı","Viktor Menelaos", "Damien Black"
-]
+# available_speakers = [
+#     "Daisy Studious", "Sofia Hellen", "Asya Anara",
+#     "Eugenio Mataracı","Viktor Menelaos", "Damien Black"
+# ]
 
-available_languages = ["US English", "Spanish (LatAm)"]
+# available_languages = ["US English", "Spanish (LatAm)"]
 
-# Defining Variables to Hold Selected Voice and Localization
-selected_speaker = available_speakers[0]
-selected_language = available_languages[0]
+# # Defining Variables to Hold Selected Voice and Localization
+# selected_speaker = available_speakers[0]
+# selected_language = available_languages[0]
 
-# TODO#6 - Managing Outputs
-# Create the output directory if it doesn't exist
-os.makedirs("output_path", exist_ok=True)
-# global variable to store the last generated audio path and text
-last_generated_audio = None
-last_generated_text = ""
+# # TODO#6 - Managing Outputs
+# # Create the output directory if it doesn't exist
+# os.makedirs("output_path", exist_ok=True)
+# # global variable to store the last generated audio path and text
+# last_generated_audio = None
+# last_generated_text = ""
 
 # TODO#7 - Implementing the Trim Function.
 def trim_text(text, max_length=30):
@@ -43,16 +44,21 @@ def trim_text(text, max_length=30):
     """
     return text[:max_length] + "..." if len(text) > max_length else text
 
-def generate_speech_from_description(description_text: str, output_path: str,speaker,language):
+def generate_speech_from_description(description_text: str, output_path: str,speaker: str, language: str):
     """
     Converts text to speech and saves the audio file.
 
     Parameters:
         description_text (str): The generated description text.
         output_path (str): Path to save the generated audio file (e.g., MP3 or WAV).
+        speaker (str): Selected speaker for TTS.
+        language (str): Selected language for TTS.
     """
-    global last_generated_audio
-    output_path = "output_path/generated_speech.wav"
+    if not description_text:
+        return {"error": "No description text provided."}
+    
+    
+    output_path = f"temp/generated_speech_{uuid.uuid4()}.wav"
     start_time = time.time()
     # Generate speech from the description text
     tts.tts_to_file(description_text,speaker=speaker,language="en" if language == "US English" else "es",
@@ -61,7 +67,6 @@ def generate_speech_from_description(description_text: str, output_path: str,spe
     # TODO#9 - Managing Duration and Tracking Variables
     end_time = time.time()
     duration = round(end_time - start_time, 2)
-    last_generated_audio = output_path
 
     # TODO#10 - Extracting Audio Information
     # calculate the length of the generated speech
@@ -69,7 +74,14 @@ def generate_speech_from_description(description_text: str, output_path: str,spe
     speech_length = len(data) / samplerate
 
     # TODO#11 - Return Audio Information
-    return output_path, speaker, language, round(speech_length, 2), duration
+    return {
+            "audio_path": output_path,
+            "speaker": speaker,
+            "language": language,
+            "speech_length": round(speech_length, 2),
+            "generation_duration": duration,
+            "status": "Speech generation successful."
+        }
         
 
 def get_image_description(image_path: str, mode: str = "summary") -> str:
@@ -94,8 +106,8 @@ def get_image_description(image_path: str, mode: str = "summary") -> str:
         # Decode the generated caption
         description = tokenizer.decode(outputs[0], skip_special_tokens=True)
         
-        # Generate speech from the description and save it
-        generate_speech_from_description(description, output_path="output_path", speaker=selected_speaker,language=selected_language)
+        # # Generate speech from the description and save it
+        # generate_speech_from_description(description, output_path="output_path", speaker=selected_speaker,language=selected_language)
 
         return description
 
