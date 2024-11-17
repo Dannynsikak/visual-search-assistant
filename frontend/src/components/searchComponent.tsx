@@ -21,6 +21,7 @@ const SearchComponent: React.FC = () => {
   const descriptionMode = useSelector(
     (state: RootState) => state.search.descriptionMode
   );
+
   const loading = useSelector((state: RootState) => state.search.loading);
   const uploadProgress = useSelector(
     (state: RootState) => state.search.uploadProgress
@@ -29,7 +30,7 @@ const SearchComponent: React.FC = () => {
   const description = useSelector(
     (state: RootState) => state.search.description
   );
-  const audioPath = useSelector((state: RootState) => state.search.audioPath);
+  const audioPath = useSelector((state: RootState) => state.search.audio_paths);
 
   const handleUpload = async () => {
     dispatch(setError(""));
@@ -65,7 +66,11 @@ const SearchComponent: React.FC = () => {
             )
           );
           dispatch(
-            setAudioPath(response.data.audio_response?.audio_paths?.mp3 || "")
+            setAudioPath(response.data.audio_response.audio_paths || []),
+            console.log(
+              "response",
+              response.data.audio_response.audio_paths.wav
+            )
           );
         } else {
           dispatch(setError("Unexpected response structure."));

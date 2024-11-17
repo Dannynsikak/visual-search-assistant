@@ -3,7 +3,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 interface SearchState {
   descriptionMode: string;
   description: string;
-  audioPath: string;
+  audio_paths: string[];
   error: string;
   loading: boolean;
   uploadProgress: number;
@@ -12,7 +12,7 @@ interface SearchState {
 const initialState: SearchState = {
   descriptionMode: "summary",
   description: "",
-  audioPath: "",
+  audio_paths: [],
   error: "",
   loading: false,
   uploadProgress: 0,
@@ -28,8 +28,8 @@ const searchSlice = createSlice({
     setDescription(state, action: PayloadAction<string>) {
       state.description = action.payload;
     },
-    setAudioPath(state, action: PayloadAction<string>) {
-      state.audioPath = action.payload;
+    setAudioPath(state, action: PayloadAction<string[]>) {
+      state.audio_paths = action.payload; // Accept an array
     },
     setError(state, action: PayloadAction<string>) {
       state.error = action.payload;

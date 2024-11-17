@@ -2,8 +2,6 @@ from TTS.api import TTS
 from pydub import AudioSegment
 
 def text_to_speech(text, filename, lang='en', speed=1.0, volume=1.0):
-    # Initialize the TTS model (ensure you have a compatible model for your use case)
-    # You can replace this model path with another pre-trained TTS model from Coqui
     model_name = TTS.list_models()[0]  # Select the first available model
     tts = TTS(model_name)
 
