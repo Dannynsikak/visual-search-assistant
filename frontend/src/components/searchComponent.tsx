@@ -30,7 +30,7 @@ const SearchComponent: React.FC = () => {
   const description = useSelector(
     (state: RootState) => state.search.description
   );
-  const audioPath = useSelector((state: RootState) => state.search.audio_paths);
+  const audioPath = useSelector((state: RootState) => state.search.audio_paths); // Single audio path
 
   const handleUpload = async () => {
     dispatch(setError(""));
@@ -59,19 +59,18 @@ const SearchComponent: React.FC = () => {
           }
         );
         if (response.data) {
+          // Correctly dispatch the description
           dispatch(
             setDescription(
-              response.data.process_response?.description ||
-                "No description available."
+              response.data.description || "No description available."
             )
           );
-          dispatch(
-            setAudioPath(response.data.audio_response.audio_paths || []),
-            console.log(
-              "response",
-              response.data.audio_response.audio_paths.wav
-            )
-          );
+
+          // Correctly dispatch the audio path
+          dispatch(setAudioPath(response.data.audio_path)); // Directly set audio path from response
+
+          // Log response (Optional: For debugging)
+          console.log("Audio Path:", response.data.audio_path);
         } else {
           dispatch(setError("Unexpected response structure."));
         }
@@ -133,7 +132,7 @@ const SearchComponent: React.FC = () => {
             {loading ? "Uploading..." : "Upload and Describe"}
           </button>
           {loading && (
-            <div className="mt-2 text-gray-500 text-sm">
+            <div className="mt-2 text-gray-500 text-sm text-center">
               {uploadProgress}% uploaded...
             </div>
           )}
@@ -141,12 +140,13 @@ const SearchComponent: React.FC = () => {
           {description && (
             <p className="mt-2 text-gray-700 text-md">{description}</p>
           )}
-          {audioPath && (
+          {audioPath ? (
             <div className="mt-4">
               <audio
                 controls
-                src={`http://localhost:8000/${audioPath}`}
+                src={audioPath} // Assuming audio path is a string
                 className="w-full"
+                autoPlay
                 onError={(e) => {
                   console.error("Audio playback error:", e);
                   const target = e.target as HTMLAudioElement;
@@ -154,7 +154,7 @@ const SearchComponent: React.FC = () => {
                 }}
               >
                 <track
-                  src={"http://localhost:8000/captions.vtt"}
+                  src="http://localhost:8000/captions.vtt"
                   kind="captions"
                   srcLang="en"
                   label="English"
@@ -162,6 +162,8 @@ const SearchComponent: React.FC = () => {
                 />
               </audio>
             </div>
+          ) : (
+            <p className="text-gray-500">No audio available.</p>
           )}
         </div>
       </div>
