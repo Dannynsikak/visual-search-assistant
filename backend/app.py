@@ -5,9 +5,10 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
-from image_processing import generate_speech_from_description, get_image_description
+from image_processing import  generate_speech, generate_speech_from_description, get_image_description
 from chromadb_config import add_to_database, query_database
 from typing import List
+import traceback
 
 
 app = FastAPI()
@@ -23,6 +24,7 @@ app.add_middleware(
 
 # Serve static files from the "temp" directory
 app.mount("/temp", StaticFiles(directory="temp"), name="temp")
+app.mount("/output_path", StaticFiles(directory="output_path"), name="output_path")
 
 available_speakers = [
     "Daisy Studious", "Sofia Hellen", "Asya Anara",
@@ -36,51 +38,59 @@ selected_speaker = available_speakers[0]
 selected_language = available_languages[0]
 
 # Create temp directory if not exists
-if not os.path.exists("temp"):
-    os.makedirs("temp")
+os.makedirs("temp", exist_ok=True)
 
-# TODO#6 - Managing Outputs
 # Create the output directory if it doesn't exist
 os.makedirs("output_path", exist_ok=True)
 # global variable to store the last generated audio path and text
-last_generated_audio = None
-last_generated_text = ""
+
 
 @app.post("/upload-image")
-async def upload_image(file: UploadFile = File(...), lang: str = "en", description_mode: str = "summary"):
+async def upload_image(
+    file: UploadFile = File(...),
+    lang: str = "en",
+    description_mode: str = "summary"
+):
     try:
         # Validate file type
         if not file.content_type.startswith("image/"):
-            return JSONResponse(content={"error": "Invalid file type. Please upload an image file."}, status_code=400)
+            return JSONResponse(
+                content={"error": "Invalid file type. Please upload an image file."},
+                status_code=400
+            )
         
-        # Save the uploaded file temporarily
         temp_file_path = f"temp/{uuid.uuid4()}_{file.filename}"
         with open(temp_file_path, "wb") as buffer:
-            buffer.write(file.file.read())
-        upload_response = {"status": "File uploaded successfully.", "file_path": temp_file_path}
-        
-        # Process image to get description
+            buffer.write(await file.read())
+
         description = get_image_description(temp_file_path, mode=description_mode)
-        if "error" in description:
-            return JSONResponse(content={"error": description}, status_code=500)
-        process_response = {"status": "Image processed successfully.", "description": description}
-        
-        # Add description to the database
+        if not description:
+            return JSONResponse(content={"error": "Failed to generate description."}, status_code=500)
+
         item_id = os.path.splitext(file.filename)[0]
         add_to_database(item_id, description)
-        
-        # Generate audio from description
-        audio_paths = generate_speech_from_description(description,speaker=selected_speaker,language=selected_language)
-        print(f"audio_paths{audio_paths}")
+
+        # Generate audio
+        audio_path, data_info, message, error = generate_speech(
+            description,
+            speaker=selected_speaker,
+            language=selected_language
+        )
+
+        if error:
+            return JSONResponse(content={"error": message}, status_code=500)
+
         return {
-            "upload_response": upload_response,
-            "process_response": process_response,
-            "database_response": {"status": "Description added to database.", "item_id": item_id},
-            "audio_response": {"status": "Audio generated successfully.", "audio_paths": audio_paths},
+            "status": "Success",
+            "description": description,
+            "audio_info": data_info,
+            "audio_path": audio_path
         }
 
     except Exception as e:
-        return JSONResponse(content={"error": f"An error occurred: {str(e)}"}, status_code=500)
+        error_message = f"An error occurred: {str(e)}\n{traceback.format_exc()}"
+        print(error_message)
+        return JSONResponse(content={"error": error_message}, status_code=500)
 
 @app.get("/audio-control/{action}")
 async def audio_control(action: str, audio_path: str):
