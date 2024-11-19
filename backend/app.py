@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 import uuid
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
@@ -9,6 +9,9 @@ from image_processing import  generate_speech, generate_speech_from_description,
 from chromadb_config import add_to_database, query_database
 from typing import List
 import traceback
+from io import BytesIO
+from pydub import AudioSegment
+import base64
 
 
 app = FastAPI()
@@ -22,10 +25,17 @@ app.add_middleware(
     allow_headers=["*"],  
 )
 
+class CustomStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        # Check if the file is a .wav and set the MIME type
+        if path.endswith(".wav"):
+            response.headers["Content-Type"] = "audio/wav"
+        return response
+    
 # Serve static files from the "temp" directory
 app.mount("/temp", StaticFiles(directory="temp"), name="temp")
-app.mount("/output_path", StaticFiles(directory="output_path"), name="output_path")
-
+app.mount("/output_path", CustomStaticFiles(directory="output_path"), name="output_path")
 available_speakers = [
     "Daisy Studious", "Sofia Hellen", "Asya Anara",
     "Eugenio Mataracı","Viktor Menelaos", "Damien Black"
@@ -47,9 +57,10 @@ os.makedirs("output_path", exist_ok=True)
 
 @app.post("/upload-image")
 async def upload_image(
+    request: Request,
     file: UploadFile = File(...),
     lang: str = "en",
-    description_mode: str = "summary"
+    description_mode: str = "summary",
 ):
     try:
         # Validate file type
@@ -79,12 +90,24 @@ async def upload_image(
 
         if error:
             return JSONResponse(content={"error": message}, status_code=500)
+        
+
+        # # Convert audio to bytes using PyDub
+        # audio = AudioSegment.from_file(audio_path)  # Load the generated audio
+        # audio_bytes = BytesIO()
+        # audio.export(audio_bytes, format="mp3")  # Export as MP3 to BytesIO
+        # audio_bytes.seek(0)
+        # print(audio)
+
+        # # audio_base64 = base64.b64encode(audio_bytes.getvalue()).decode('utf-8')
+
+
 
         return {
             "status": "Success",
             "description": description,
             "audio_info": data_info,
-            "audio_path": audio_path
+            "audio_path": f"{request.base_url}{audio_path}"
         }
 
     except Exception as e:
@@ -117,7 +140,7 @@ async def audio_control(action: str, audio_path: str):
 
 
 @app.get("/latest-recordings", response_model=List[str])
-def get_latest_recordings():
+def get_latest_recordings(request: Request,):
     try:
         # List all .wav files in the "output_path" directory
         recordings = list(Path("output_path").glob("*.wav"))
@@ -126,7 +149,7 @@ def get_latest_recordings():
         recordings.sort(key=lambda x: x.stat().st_mtime, reverse=True)
         
         # Get the first recordings and construct URLs
-        latest_recordings = [f"/output_path/{file.name}" for file in recordings[:1]]
+        latest_recordings = [f"{request.base_url}output_path/{file.name}" for file in recordings[:6]]
         
         return latest_recordings
     
