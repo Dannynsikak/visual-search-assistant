@@ -36,7 +36,7 @@ export const fetchAudioPath = createAsyncThunk(
         throw new Error(`Failed to fetch audio: ${response.statusText}`);
       }
       const data = await response.json();
-      return data.audio_path; // Assuming backend returns { audio_path: string }
+      return data.audio_path;
     } catch (error) {
       const err = error as FetchError;
       return rejectWithValue(err.message || "Failed to fetch audio.");

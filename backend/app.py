@@ -1,18 +1,14 @@
 import os
 from pathlib import Path
 import uuid
-from fastapi import FastAPI, File, UploadFile, Request
+from fastapi import FastAPI, File, Form, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
-from image_processing import  generate_speech, generate_speech_from_description, get_image_description
-from chromadb_config import add_to_database, query_database
+from image_processing import  generate_speech, get_image_description
+from chromadb_config import add_to_database
 from typing import List
 import traceback
-from io import BytesIO
-from pydub import AudioSegment
-import base64
-
 
 app = FastAPI()
 
@@ -36,11 +32,11 @@ class CustomStaticFiles(StaticFiles):
 # Serve static files from the "temp" directory
 app.mount("/temp", StaticFiles(directory="temp"), name="temp")
 app.mount("/output_path", CustomStaticFiles(directory="output_path"), name="output_path")
+
 available_speakers = [
     "Daisy Studious", "Sofia Hellen", "Asya Anara",
     "Eugenio Mataracı","Viktor Menelaos", "Damien Black"
 ]
-
 available_languages = ["US English", "Spanish (LatAm)"]
 
 # Defining Variables to Hold Selected Voice and Localization
@@ -61,12 +57,27 @@ async def upload_image(
     file: UploadFile = File(...),
     lang: str = "en",
     description_mode: str = "summary",
+    speaker: str = Form(...),
+    language: str = Form(...),
 ):
     try:
         # Validate file type
         if not file.content_type.startswith("image/"):
             return JSONResponse(
                 content={"error": "Invalid file type. Please upload an image file."},
+                status_code=400
+            )
+        
+        # Validate speaker and language inputs
+        if speaker not in available_speakers:
+            return JSONResponse(
+                content={"error": f"Invalid speaker. Choose from {available_speakers}."},
+                status_code=400
+            )
+        
+        if language not in available_languages:
+            return JSONResponse(
+                content={"error": f"Invalid language. Choose from {available_languages}."},
                 status_code=400
             )
         
@@ -81,28 +92,16 @@ async def upload_image(
         item_id = os.path.splitext(file.filename)[0]
         add_to_database(item_id, description)
 
-        # Generate audio
+        # Generate speech from description
         audio_path, data_info, message, error = generate_speech(
             description,
-            speaker=selected_speaker,
-            language=selected_language
+            speaker,
+            language
         )
 
         if error:
             return JSONResponse(content={"error": message}, status_code=500)
         
-
-        # # Convert audio to bytes using PyDub
-        # audio = AudioSegment.from_file(audio_path)  # Load the generated audio
-        # audio_bytes = BytesIO()
-        # audio.export(audio_bytes, format="mp3")  # Export as MP3 to BytesIO
-        # audio_bytes.seek(0)
-        # print(audio)
-
-        # # audio_base64 = base64.b64encode(audio_bytes.getvalue()).decode('utf-8')
-
-
-
         return {
             "status": "Success",
             "description": description,

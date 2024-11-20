@@ -19,23 +19,11 @@ tts = TTS(model_name, gpu=False)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 
-available_speakers = [
-    "Daisy Studious", "Sofia Hellen", "Asya Anara",
-    "Eugenio Mataracı","Viktor Menelaos", "Damien Black"
-]
-
-available_languages = ["US English", "Spanish (LatAm)"]
-
-# Defining Variables to Hold Selected Voice and Localization
-selected_speaker = available_speakers[0]
-selected_language = available_languages[0]
-
-# # TODO#6 - Managing Outputs
 # # Create the output directory if it doesn't exist
 os.makedirs("output_path", exist_ok=True)
-# # global variable to store the last generated audio path and text
+# global variable to store the last generated audio path and text
 last_generated_audio = None
-# last_generated_text = ""
+
 
 # TODO#7 - Implementing the Trim Function.
 def trim_text(text, max_length=30):
