@@ -1,4 +1,5 @@
 import type React from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import {
@@ -7,22 +8,35 @@ import {
   setError,
   setLoading,
   setUploadProgress,
-  // fetchAudioPath,
   setAudioPath,
 } from "../slice/searchSlice";
 import type { AppDispatch, RootState } from "../store";
-import { useState } from "react";
 import { ToggleButton } from "./ToggleBtn";
 import ToggleModal from "./ToggleModel";
+
+const availableSpeakers = [
+  "Daisy Studious",
+  "Sofia Hellen",
+  "Asya Anara",
+  "Eugenio Mataracı",
+  "Viktor Menelaos",
+  "Damien Black",
+];
+
+const availableLanguages = ["US English", "Spanish (LatAm)"];
 
 const SearchComponent: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
 
   const [file, setFile] = useState<File | null>(null);
+  const [selectedSpeaker, setSelectedSpeaker] = useState(availableSpeakers[0]);
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    availableLanguages[0]
+  );
+
   const descriptionMode = useSelector(
     (state: RootState) => state.search.descriptionMode
   );
-
   const loading = useSelector((state: RootState) => state.search.loading);
   const uploadProgress = useSelector(
     (state: RootState) => state.search.uploadProgress
@@ -31,7 +45,7 @@ const SearchComponent: React.FC = () => {
   const description = useSelector(
     (state: RootState) => state.search.description
   );
-  const audioPath = useSelector((state: RootState) => state.search.audio_paths); // Single audio path
+  const audioPath = useSelector((state: RootState) => state.search.audio_paths);
 
   const handleUpload = async () => {
     dispatch(setError(""));
@@ -42,6 +56,8 @@ const SearchComponent: React.FC = () => {
     if (file) {
       formData.append("file", file);
       formData.append("description_mode", descriptionMode);
+      formData.append("speaker", selectedSpeaker);
+      formData.append("language", selectedLanguage);
 
       try {
         const response = await axios.post(
@@ -60,18 +76,12 @@ const SearchComponent: React.FC = () => {
           }
         );
         if (response.data) {
-          // Correctly dispatch the description
           dispatch(
             setDescription(
               response.data.description || "No description available."
             )
           );
-
-          // Correctly dispatch the audio path
-          dispatch(setAudioPath(response.data.audio_path)); // Directly set audio path from response
-
-          // Log response (Optional: For debugging)
-          console.log("Audio Path:", response.data.audio_path);
+          dispatch(setAudioPath(response.data.audio_path));
         } else {
           dispatch(setError("Unexpected response structure."));
         }
@@ -109,6 +119,7 @@ const SearchComponent: React.FC = () => {
             onChange={(e) => setFile(e.target.files?.[0] || null)}
             className="text-red-600 font-bold mb-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
           />
+
           <label
             htmlFor="description-mode"
             className="block text-md font-semibold text-gray-800 mb-2"
@@ -119,11 +130,50 @@ const SearchComponent: React.FC = () => {
             id="description-mode"
             value={descriptionMode}
             onChange={(e) => dispatch(setDescriptionMode(e.target.value))}
-            className="mb-4 border border-gray-300  rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
+            className="mb-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
           >
             <option value="summary">Summary</option>
             <option value="detailed">Detailed</option>
           </select>
+
+          <label
+            htmlFor="speaker"
+            className="block text-md font-semibold text-gray-800 mb-2"
+          >
+            Speaker:
+          </label>
+          <select
+            id="speaker"
+            value={selectedSpeaker}
+            onChange={(e) => setSelectedSpeaker(e.target.value)}
+            className="mb-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
+          >
+            {availableSpeakers.map((speaker) => (
+              <option key={speaker} value={speaker}>
+                {speaker}
+              </option>
+            ))}
+          </select>
+
+          <label
+            htmlFor="language"
+            className="block text-md font-semibold text-gray-800 mb-2"
+          >
+            Language:
+          </label>
+          <select
+            id="language"
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+            className="mb-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 p-2"
+          >
+            {availableLanguages.map((language) => (
+              <option key={language} value={language}>
+                {language}
+              </option>
+            ))}
+          </select>
+
           <button
             type="button"
             onClick={handleUpload}
@@ -143,17 +193,7 @@ const SearchComponent: React.FC = () => {
           )}
           {audioPath ? (
             <div className="mt-4">
-              <audio
-                controls
-                src={audioPath} // Assuming audio path is a string
-                className="w-full"
-                autoPlay
-                onError={(e) => {
-                  console.error("Audio playback error:", e);
-                  const target = e.target as HTMLAudioElement;
-                  console.error("Error details:", target.error);
-                }}
-              >
+              <audio controls src={audioPath} className="w-full" autoPlay>
                 <track
                   src="http://localhost:8000/captions.vtt"
                   kind="captions"
