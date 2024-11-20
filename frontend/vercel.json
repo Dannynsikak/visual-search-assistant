@@ -8,14 +8,26 @@
         "distDir": "frontend/dist",
         "buildCommand": "npm run build"
       }
+    },
+    {
+      "src": "backend/api/**/*.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/api/$1"
+    },
     {
       "src": "/(.*)",
       "dest": "frontend/dist/$1"
     }
   ],
-
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }]
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
 }

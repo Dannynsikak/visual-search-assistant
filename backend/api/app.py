@@ -5,8 +5,8 @@ from fastapi import FastAPI, File, Form, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
-from image_processing import  generate_speech, get_image_description
-from chromadb_config import add_to_database
+from backend.api.image_processing import  generate_speech, get_image_description
+from backend.api.chromadb_config import add_to_database
 from typing import List
 import traceback
 
@@ -39,17 +39,11 @@ available_speakers = [
 ]
 available_languages = ["US English", "Spanish (LatAm)"]
 
-# Defining Variables to Hold Selected Voice and Localization
-selected_speaker = available_speakers[0]
-selected_language = available_languages[0]
-
 # Create temp directory if not exists
 os.makedirs("temp", exist_ok=True)
 
 # Create the output directory if it doesn't exist
 os.makedirs("output_path", exist_ok=True)
-# global variable to store the last generated audio path and text
-
 
 @app.post("/upload-image")
 async def upload_image(
