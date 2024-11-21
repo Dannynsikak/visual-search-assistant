@@ -137,15 +137,15 @@ Upload Image: Navigate to the upload section and select an image.
 Choose Mode: Pick either “Summary” or “Detailed” for the description and for the speaker and language select the needed speaker and language from the list of options.
 Submit for Processing: Click "Upload and Describe" to start processing.
 
-![upload image screenshot](UploadImage.png)
-![choose description](choosedescription.png)
-![select speaker](selectspeaker.png)
-![select language](selectlangauge.png)
-![upload btn](uploadbtn.png)
+![upload image screenshot](./frontend/public/README.mdImgs/UploadImage.png)
+![choose description](./frontend/public/README.mdImgs/choosedescription.png)
+![select speaker](./frontend/public/README.mdImgs/selectspeaker.png)
+![select language](./frontend/public/README.mdImgs/selectlangauge.png)
+![upload btn](./frontend/public/README.mdImgs/uploadbtn.png)
 View Results:
 Text Output: Read the generated output.
 Audio Playback: Use the built-in player to listen to the description.
-![response](response.png)
+![response](./frontend/public/README.mdImgs/response.png)
 
 ## Project Structure
 
