@@ -5,8 +5,8 @@ from fastapi import FastAPI, File, Form, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
-from backend.api.image_processing import  generate_speech, get_image_description
-from backend.api.chromadb_config import add_to_database
+from image_processing import  generate_speech, get_image_description
+from chromadb_config import add_to_database
 from typing import List
 import traceback
 

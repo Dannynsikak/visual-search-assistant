@@ -103,6 +103,10 @@ const SearchComponent: React.FC = () => {
     <div className="p-2">
       <ToggleButton />
       <ToggleModal />
+      {/* Project Name */}
+      <h1 className="text-3xl font-bold text-center text-gray-800">
+        Visual Search Assistant
+      </h1>
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col max-w-md w-full p-6 bg-white shadow-lg rounded-lg">
           <label
@@ -204,7 +208,9 @@ const SearchComponent: React.FC = () => {
               </audio>
             </div>
           ) : (
-            <p className="text-gray-500">No audio available.</p>
+            <p className="text-gray-500 text-center font-medium">
+              Upload an Image to Generate Speech
+            </p>
           )}
         </div>
       </div>

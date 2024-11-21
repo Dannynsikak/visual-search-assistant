@@ -2,7 +2,7 @@ import SearchComponent from "./components/searchComponent";
 
 function App() {
   return (
-    <main className="">
+    <main>
       <SearchComponent />
     </main>
   );
