@@ -13,6 +13,7 @@ import {
 import type { AppDispatch, RootState } from "../store";
 import { ToggleButton } from "./ToggleBtn";
 import ToggleModal from "./ToggleModel";
+import { fetchWaveform } from "../slice/waveFormSlice";
 
 const availableSpeakers = [
   "Daisy Studious",
@@ -46,6 +47,11 @@ const SearchComponent: React.FC = () => {
     (state: RootState) => state.search.description
   );
   const audioPath = useSelector((state: RootState) => state.search.audio_paths);
+  const waveform = useSelector((state: RootState) => state.waveform.waveform);
+  const waveformLoading = useSelector(
+    (state: RootState) => state.waveform.loading
+  );
+  const waveformError = useSelector((state: RootState) => state.waveform.error);
 
   const handleUpload = async () => {
     dispatch(setError(""));
@@ -82,6 +88,7 @@ const SearchComponent: React.FC = () => {
             )
           );
           dispatch(setAudioPath(response.data.audio_path));
+          dispatch(fetchWaveform());
         } else {
           dispatch(setError("Unexpected response structure."));
         }
@@ -212,6 +219,20 @@ const SearchComponent: React.FC = () => {
               Upload an Image to Generate Speech
             </p>
           )}
+          {/* Display waveform after fetching */}
+          {waveformLoading ? (
+            <p className="mt-2 text-gray-500 text-sm">Loading waveform...</p>
+          ) : waveform ? (
+            <div className="mt-4">
+              <img
+                src={waveform}
+                alt="generated waveform"
+                className="w-full max-w-[100%] inline-block"
+              />
+            </div>
+          ) : waveformError ? (
+            <p className="mt-2 text-red-500 text-sm">{waveformError}</p>
+          ) : null}
         </div>
       </div>
     </div>

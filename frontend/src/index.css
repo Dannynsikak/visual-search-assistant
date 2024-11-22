@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* styles.css or in a relevant CSS file */
 body.light-theme {
   /* Light theme styles */
   background-color: #ffffff;

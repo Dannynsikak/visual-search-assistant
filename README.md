@@ -4,21 +4,21 @@ The Visual Search Assistant is a powerful tool designed to enhance accessibility
 
 ## Table of Contents
 
-# Features
+Features
 
-# Technologies Used
+Technologies Used
 
-# Setup Instructions
+Setup Instructions
 
-# Usage
+Usage
 
-# Project Structure
+Project Structure
 
-# API Endpoints
+API Endpoints
 
-# Future Improvements
+Future Improvements
 
-# License
+License
 
 ## Features
 
@@ -57,6 +57,17 @@ Unique File Paths: Organizes uploaded files and audio files with unique identifi
 Frontend Framework: Built with React and Tailwind CSS, providing a responsive and visually appealing UI.
 Accessibility: Designed to be user-friendly for all users, with a focus on accessible elements for audio playback.
 
+# WAV Image Visualization for Audio Paths
+
+Added a new feature to enhance the accessibility and interactivity of the platform! Now, not only does the Visual Search Assistant generate text descriptions and audio files, but it also provides a visual representation of the generated audio.
+
+How it works:
+Audio Path Visualization: After processing an image and generating the description audio, the backend now creates a visual waveform image (wav.png) of the audio file, which is displayed to the user in the frontend.
+
+Waveform Display: This new visual feature helps users better understand the structure of the audio, providing a graphical representation of sound waves. It offers users an additional layer of feedback, showing the peaks and valleys of the audio's intensity.
+
+Why it's useful: This feature enhances the user experience by providing both auditory and visual outputs. It's particularly beneficial for users who prefer a more interactive and engaging interface, or for visually impaired users who may benefit from additional context around the audio content.
+
 ## Technologies Used
 
 # Frontend:
@@ -64,12 +75,13 @@ Accessibility: Designed to be user-friendly for all users, with a focus on acces
 React: JavaScript framework for building the UI.
 Tailwind CSS: Utility-first CSS framework for fast, responsive design.
 Axios: Used for handling HTTP requests to the backend server.
+Redux & ReduxToolkit: used for state mangement of the entire App.
 
 # Backend:
 
 Python with FastAPI: High-performance Python framework for building API endpoints.
 Transformers Library: Uses the VisionEncoderDecoderModel for image-to-text processing.
-Coqui TTS: Provides text-to-speech functionality, replacing Pydub.
+Coqui TTS: Provides text-to-speech functionality, replacing Pydub python module.
 Pillow: Image processing library for loading and validating images.
 Torch: Supports running deep learning models.
 
@@ -81,7 +93,7 @@ ViTImageProcessor and AutoTokenizer: Tools for pre-processing images and tokeniz
 
 Chromadb:ChromaDB is a vector database used to store and manage metadata of generated descriptions. It enables efficient retrieval and search functionality by representing data as embeddings, making it ideal for handling complex queries, such as searching for similar image descriptions or categorizing data based on content relationships.
 
-Coqui TTS:
+Coqui TTS: Coqui TTS is an open-source, user-friendly text-to-speech (TTS) library designed to convert written text into natural-sounding speech. It supports multilingual voices, fine-tuning, and customization, making it ideal for applications like voice assistants, audiobooks, and accessibility tools.
 
 # Database and Utilities
 
@@ -123,11 +135,10 @@ npm install
 ## Run the Application:
 
 Start the backend server:
-
 cd backend
 uvicorn main:app --reload
-Start the frontend development server:
 
+Start the frontend development server:
 cd frontend
 npm run dev
 
@@ -136,16 +147,16 @@ npm run dev
 Upload Image: Navigate to the upload section and select an image.
 Choose Mode: Pick either “Summary” or “Detailed” for the description and for the speaker and language select the needed speaker and language from the list of options.
 Submit for Processing: Click "Upload and Describe" to start processing.
-
-![upload image screenshot](./frontend/public/README.mdImgs/UploadImage.png)
-![choose description](./frontend/public/README.mdImgs/choosedescription.png)
-![select speaker](./frontend/public/README.mdImgs/selectspeaker.png)
-![select language](./frontend/public/README.mdImgs/selectlangauge.png)
-![upload btn](./frontend/public/README.mdImgs/uploadbtn.png)
+![upload image screenshot](./frontend/public/README.mdImgs/uploadimage.png)
+![choose description screenshot](./frontend/public/README.mdImgs/descriptionMode.png)
+![select speaker screenshot](./frontend/public/README.mdImgs/chooseSpeaker.png)
+![select language screenshot](./frontend/public/README.mdImgs/selectLanguage.png)
+![upload btn screenshot](./frontend/public/README.mdImgs/uploadBTN.png)
 View Results:
 Text Output: Read the generated output.
 Audio Playback: Use the built-in player to listen to the description.
-![response](./frontend/public/README.mdImgs/response.png)
+audio_waveform_image: generated visual waveform image
+![response screenshot](./frontend/public/README.mdImgs/Response.png)
 
 ## Project Structure
 
@@ -158,6 +169,7 @@ Audio Playback: Use the built-in player to listen to the description.
 │ └── chromadb_config.py #  # Machine learning models
 ├── frontend/
 │ ├── public/
+│ │ │ ├── README.mdImgs # stores the static photos and videos
 │ ├── src/
 │ │ ├── components/
 │ │ │ ├── SearchComponent.tsx # Main upload component
@@ -185,6 +197,7 @@ language: select from the list of available languages
 Response:
 description: Generated text description.
 audio_paths: URL to generated audio file.
+audio_waveform_image: URL to the generated visual waveform image (wav.png) representing the audio file.
 Get /latest-recordings
 Descrription: Returns the available six generated speech
 
@@ -194,6 +207,14 @@ Image Caching: Add caching for previously processed images to improve performanc
 Additional Modes: Include additional modes, such as “creative” or “contextual.”
 Expanded Language Options: Leverage Coqui TTS's multilingual capabilities to allow users to choose their preferred language for text descriptions and audio outputs.
 Extended Error Logging: Implement more robust logging for better debugging.
+
+# Video Demonstration
+
+<video controls src="./frontend/public/README.mdImgs/Project2.mp4" title="Visual Search Assitant"></video>
+
+# Waveform Image generation Demonstration
+
+<video controls src="./frontend/public/README.mdImgs/waveformImage.mp4" title="WaveForm Visualization"></video>
 
 # License
 

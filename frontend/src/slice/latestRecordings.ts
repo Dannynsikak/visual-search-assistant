@@ -1,14 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
-// Define the structure of a Recording
+// Define the structure of the audio
 export interface Recording {
-  id: string; // Unique identifier for the recording
+  id: string; // Unique identifier for the audio
   url: string; // The URL of the audio file for playback
 }
 
-// Define the structure of the Recordings state
+// Define the structure of the audio state
 export interface RecordingsState {
-  recordings: Recording[]; // List of recordings
+  recordings: Recording[]; // List of audios
   loading: boolean; // Loading state
   error: string | null; // Error message, if any
 }
@@ -29,21 +28,17 @@ export const fetchLatestRecordings = createAsyncThunk(
     if (!response.ok) {
       throw new Error(`Failed to fetch recordings: ${response.statusText}`);
     }
-
-    // Assuming the response contains an array of URLs for the MP3 files
     const recordingsArray = await response.json();
-
-    // Map through each recording URL and generate an object with id and URL
+    // Map through each audio URL and generate an object with id and URL
     const recordings = recordingsArray.map(
       (recordingUrl: string, index: number) => {
         return {
           id: String(index), // Generate a unique ID based on the index
-          url: recordingUrl, // Use the URL directly (no need for Blob conversion)
+          url: recordingUrl, // Use the URL directly
         };
       }
     );
-
-    return recordings; // Return the list of recordings
+    return recordings; // Return the list of audios
   }
 );
 
@@ -56,7 +51,7 @@ const recordingSlice = createSlice({
       .addCase(fetchLatestRecordings.pending, (state) => {
         // Set loading state to true when fetching starts
         state.loading = true;
-        state.error = null; // Clear previous error
+        state.error = null;
       })
       .addCase(fetchLatestRecordings.fulfilled, (state, action) => {
         // On successful fetch, update state with the recordings
