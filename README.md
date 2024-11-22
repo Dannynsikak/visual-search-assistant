@@ -215,7 +215,7 @@ https://github.com/user-attachments/assets/1aca8d57-cc1a-4fcd-8e9c-9d342b8129fb
 
 # Waveform Image generation Demonstration
 
-<video controls src="/frontend/public/README.mdImgs/waveformImage.mp4" title="WaveForm Visualization"></video>
+https://github.com/user-attachments/assets/33f7f8b4-8346-42d6-8b2b-8fbe8ae5bfa4
 
 # License
 
