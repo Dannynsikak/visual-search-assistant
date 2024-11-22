@@ -6,7 +6,8 @@ from TTS.api import TTS
 import os
 import time
 from scipy.io import wavfile
-
+import matplotlib.pyplot as plt
+import numpy as np
 # Load the model, feature extractor,tokenizer and Coqui TTS
 model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
 feature_extractor = ViTImageProcessor.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
@@ -19,13 +20,15 @@ tts = TTS(model_name, gpu=False)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model.to(device)
 
-# # Create the output directory if it doesn't exist
+#  Create the output directory if it doesn't exist
 os.makedirs("output_path", exist_ok=True)
+os.makedirs("output", exist_ok=True)
 # global variable to store the last generated audio path and text
 last_generated_audio = None
+last_generated_text = ""
 
 
-# TODO#7 - Implementing the Trim Function.
+# Implementing the Trim Function.
 def trim_text(text, max_length=30):
     """
     Trim the text to a maximum length and add ellipsis if it exceeds the limit.
@@ -62,13 +65,14 @@ def generate_speech_from_description(description_text: str, output_path: str, sp
         # Calculate duration
         duration = round(end_time - start_time, 2)
 
-        # Read the generated audio file
+        # Update global variable
+        global last_generated_audio,last_generated_text
+        last_generated_audio = output_path
+        last_generated_text =  description_text
+
+          # Read the generated audio file
         samplerate, data = wavfile.read(output_path)
         speech_length = len(data) / samplerate
-
-        # Update global variable
-        global last_generated_audio
-        last_generated_audio = output_path
 
         return {
             "audio_path": output_path,
@@ -82,6 +86,46 @@ def generate_speech_from_description(description_text: str, output_path: str, sp
     except Exception as e:
         return {"error": f"Failed to generate speech: {e}"}
 
+# Waveform Function
+def generate_waveform():
+    # Initialize Global Variables and Input Validation
+    global last_generated_audio, last_generated_text
+
+    # Check if a valid audio file exists
+    if not last_generated_audio or not os.path.exists(last_generated_audio):
+        return None, "No valid audio file found to generate waveform."
+
+    # Read Audio File and Create Time Axis
+    samplerate, data = wavfile.read(last_generated_audio)
+    time_axis = np.linspace(0, len(data) / samplerate, num=len(data))
+
+    # Plot the Waveform with Custom Styling
+    fig, ax = plt.subplots(figsize=(8, 4), facecolor='#1E1E1E')  # Dark background
+
+    # Plot the Waveform with Custom Styling
+    ax.plot(time_axis, data, color='cyan', alpha=0.8, linewidth=1.2)
+
+    # Styling grid and axes for a modern look
+    ax.set_facecolor('#2E2E2E')  # Set darker plot background
+    ax.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.5)  # Add grid lines
+    ax.spines['bottom'].set_color('white')  # Set bottom spine color to white
+    ax.spines['left'].set_color('white')  # Set left spine color to white
+    ax.tick_params(axis='x', colors='white')  # Set x-axis tick color
+    ax.tick_params(axis='y', colors='white')  # Set y-axis tick color
+    ax.set_xlabel("Time (seconds)", color='white')  # Label x-axis
+    ax.set_ylabel("Amplitude", color='white')  # Label y-axis
+
+    # Add a Title to the Plot
+    # Trim long text for display in title
+    trimmed_text = trim_text(last_generated_text)
+    ax.set_title(f"Waveform for text input: '{trimmed_text}'", color='white', fontsize=14)
+
+    # Save the waveform image
+    waveform_image_path = "output/waveform.png"
+    plt.savefig(waveform_image_path, transparent=True)
+    plt.close()
+
+    return waveform_image_path, "Waveform generated successfully!"
 
 def generate_speech(description_text: str, speaker: str, language: str):
     """
@@ -155,9 +199,6 @@ def get_image_description(image_path: str, mode: str = "summary") -> str:
         # Decode the generated caption
         description = tokenizer.decode(outputs[0], skip_special_tokens=True)
         
-        # # Generate speech from the description and save it
-        # generate_speech_from_description(description, output_path="output_path", speaker=selected_speaker,language=selected_language)
-
         return description
 
     except UnidentifiedImageError:

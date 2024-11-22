@@ -1,13 +1,14 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 import searchReducer from "./slice/searchSlice";
 import recordingReducer from "./slice/latestRecordings";
+import waveformReducer from "./slice/waveFormSlice";
 
 // Define the shape of your app's state
 type ModeState = {
   mode: "light" | "dark";
 };
 
-// Create a slice for the mode state
+// slice for the mode state
 const modeSlice = createSlice({
   name: "mode",
   initialState: {
@@ -34,6 +35,7 @@ const store = configureStore({
     search: searchReducer,
     mode: modeSlice.reducer,
     recordings: recordingReducer,
+    waveform: waveformReducer,
   },
 });
 
