@@ -210,11 +210,11 @@ Extended Error Logging: Implement more robust logging for better debugging.
 
 # Video Demonstration
 
-<video controls src="/frontend/public/README.mdImgs/Project2.mp4" title="Visual Search Assitant"></video>
+<video controls src="/README.mdImgs/Project2.mp4" title="Visual Search Assitant"></video>
 
 # Waveform Image generation Demonstration
 
-<video controls src="/frontend/public/README.mdImgs/waveformImage.mp4" title="WaveForm Visualization"></video>
+<video controls src="/README.mdImgs/waveformImage.mp4" title="WaveForm Visualization"></video>
 
 # License
 
