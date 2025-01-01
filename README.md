@@ -136,7 +136,7 @@ npm install
 
 Start the backend server:
 cd backend
-uvicorn main:app --reload
+uvicorn app:app --reload
 
 Start the frontend development server:
 cd frontend
